@@ -1,0 +1,6 @@
+x1 = int(input('coordinate x1'))
+x2 = int(input('coordinate x2'))
+y1 = int(input('coordinate y1'))
+y2 = int(input('coordinate y2'))
+distance = round(((x1-x2)**2 + (y1-y2)**2)**0,5, 3) 
+print(distance)
