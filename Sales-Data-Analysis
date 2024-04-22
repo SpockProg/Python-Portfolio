@@ -1,0 +1,70 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+from scipy.stats import linregress
+
+# Load the dataset
+def load_data(filename):
+    return pd.read_csv(filename)
+
+# Basic data exploration
+def explore_data(df):
+    print("Data Overview:")
+    print(df.head())
+    print("\nStatistics:")
+    print(df.describe())
+    print("\nMissing values:")
+    print(df.isnull().sum())
+
+# Time series plot for total sales
+def plot_sales_over_time(df, date_col, sales_col):
+    plt.figure(figsize=(10, 5))
+    df[date_col] = pd.to_datetime(df[date_col])
+    df.set_index(date_col, inplace=True)
+    df[sales_col].plot()
+    plt.title('Sales Over Time')
+    plt.xlabel('Date')
+    plt.ylabel('Sales')
+    plt.show()
+
+# Seasonal Analysis using month and day
+def seasonal_analysis(df, date_col):
+    df['Month'] = df[date_col].dt.month
+    df['Day'] = df[date_col].dt.day
+    plt.figure(figsize=(12, 6))
+    sns.boxplot(x='Month', y='Sales', data=df)
+    plt.title('Monthly Sales Distribution')
+    plt.xlabel('Month')
+    plt.ylabel('Sales')
+    plt.show()
+
+    plt.figure(figsize=(12, 6))
+    sns.boxplot(x='Day', y='Sales', data=df)
+    plt.title('Daily Sales Distribution')
+    plt.xlabel('Day')
+    plt.ylabel('Sales')
+    plt.show()
+
+# Regression analysis to predict future sales
+def regression_analysis(df, x_col, y_col):
+    df['Time_Index'] = range(len(df))
+    slope, intercept, r_value, p_value, std_err = linregress(df[x_col], df[y_col])
+    print(f"Regression analysis results: Slope={slope}, Intercept={intercept}, R-squared={r_value**2}")
+
+    df['Predicted_Sales'] = intercept + slope * df['Time_Index']
+    plt.figure(figsize=(10, 5))
+    plt.scatter(df['Time_Index'], df[y_col], color='blue', label='Actual Sales')
+    plt.plot(df['Time_Index'], df['Predicted_Sales'], color='red', label='Predicted Sales')
+    plt.title('Regression Analysis of Sales')
+    plt.xlabel('Time Index')
+    plt.ylabel('Sales')
+    plt.legend()
+    plt.show()
+
+# Load and process the data
+data_file = 'sales_data.csv'  # Modify this with the actual file path
+data = load_data(data_file)
+explore_data(data)
+plot_sales_over_time(data, 'Date', 'Sales')
+seasonal_analysis(data, 'Date')
+regression_analysis(data, 'Time_Index', 'Sales')
